@@ -62,7 +62,11 @@ const CommentModal = ({comments}: commentModalProps) => {
                             style={styles.userImage}
                             source={{uri: comment.user.image}}
                         />
-                        <View>
+                        <View style={{
+                            backgroundColor: "#F2F2F2",
+                            borderRadius: 13,
+                            padding: 10,
+                        }}>
                             <Text style={{ fontSize: 12, fontWeight: "bold", marginLeft: 8 }}>{comment.user.name}</Text>
                             <Text style={{ fontSize: 12, marginLeft: 8, marginRight:60,  marginTop:5 }}>{comment.comment}</Text>
                         </View>
@@ -94,7 +98,6 @@ const styles = StyleSheet.create({
 
     userCommentContainer: {
         flexDirection: "row",
-        alignItems: "center",
         marginBottom: 15
     },
 
@@ -102,6 +105,8 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
         borderRadius: 20,
+        marginRight: 10,
+        marginTop: 5,
     },
 
     input: {

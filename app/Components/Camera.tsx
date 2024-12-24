@@ -63,13 +63,17 @@ const Camera = ({setOpenCameraModal, onImageSubmit} : CameraProps) => {
     const capturePhoto = async () => {
         if (!cameraRef.current) return;
         try {
+            console.log('hey')
             // Take picture with base64
             const photo = await cameraRef.current.takePictureAsync({
                 base64: true,
+                skipProcessing: false,
             });
+            console.log('Photo captured:', photo.uri);
 
             // Save the URI to display the photo
             setCapturedPhoto(photo.uri);
+
 
             // Run the flip animation
             Animated.timing(flipAnim, {

@@ -26,11 +26,11 @@ const StarsModal = ({stars}: starsModalProps) => {
                         />
                         <View style={{marginLeft : 20}}>
                             <Text style={{ fontSize: 12, fontWeight: "bold", marginLeft: 3 }}>{star.user.name}</Text>
-                            <View style={{flexDirection: "row"}}>
+                            <View style={{flexDirection: "row", marginTop:7}}>
                                 {[1, 2, 3, 4, 5].map((starValue, index) => (
                                     <FontAwesomeIcon
                                         key={index}
-                                        size={20}
+                                        size={19}
                                         icon={starValue <= star.stars ? solidStar : faStar}
                                         color={starValue <= star.stars ? 'gold' : 'gray'}
                                     />
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     userStarsContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 15,
+        marginBottom: 20,
     },
     userImage: {
         height: 40,

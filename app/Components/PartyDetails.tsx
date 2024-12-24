@@ -293,6 +293,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 10.32,
+        elevation:10,
     },
 
     backButton: {
@@ -310,6 +311,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 10.32,
+        elevation:10,
     }
 });
 

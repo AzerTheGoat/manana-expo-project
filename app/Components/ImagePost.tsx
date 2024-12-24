@@ -32,7 +32,7 @@ const ImagePost = ({ participantPost }: ImagePostProps) => {
             </View>
 
             {/* Image Thumbnail */}
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} activeOpacity={1}>
                 <Image
                     style={styles.cardImage}
                     source={{ uri: participantPost.image }}
@@ -72,13 +72,14 @@ const ImagePost = ({ participantPost }: ImagePostProps) => {
 const styles = StyleSheet.create({
     imagePostContainer: {
         backgroundColor: "#F2F2F2",
-        marginHorizontal: 20,
+        marginHorizontal: '5%',
         marginVertical: 10,
         borderRadius: 13,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 10.32,
+        elevation: 5,
     },
 
     headerContainer: {
@@ -95,14 +96,14 @@ const styles = StyleSheet.create({
     },
 
     cardImage: {
-        height: 250,
+        height: 350,
         width: "100%",
     },
 
     /* Modal overlay that darkens the background: */
     modalContainer: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.85)", // dark overlay
+        backgroundColor: "black", // dark overlay
         justifyContent: "center",
         alignItems: "center",
     },

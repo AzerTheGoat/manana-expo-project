@@ -23,7 +23,11 @@ const bingoModal = ({bingos}: bingoModalProps) => {
                             style={styles.userImage}
                             source={{uri: bingo.user.image}}
                         />
-                        <View>
+                        <View style={{
+                            backgroundColor: "#F2F2F2",
+                            borderRadius: 13,
+                            padding: 10,
+                        }}>
                             <Text style={{ fontSize: 12, fontWeight: "bold"}}>{bingo.user.name} ({bingo.points} points)</Text>
                             <Text style={{ fontSize: 12, marginRight:60, marginTop:5 }}>{bingo.text}</Text>
                             <Text style={{ fontSize: 12, marginRight:60, marginTop:5, alignSelf:'flex-end' }}>approved by : {bingo.approvedBy.map(
@@ -59,15 +63,14 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
         borderRadius: 20,
-        margin: 10,
+        marginHorizontal: 10,
+        marginTop: 5,
     },
 
     bingoCard: {
         paddingVertical: 10,
-        backgroundColor: "#F2F2F2",
         marginVertical: 5,
         borderRadius: 13,
         flexDirection: "row",
-        alignItems: "center",
     }
 });

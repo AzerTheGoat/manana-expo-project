@@ -5,7 +5,7 @@ import {
     View, TouchableOpacity, LogBox,
 } from "react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {useLocalSearchParams, useNavigation} from "expo-router";
+import {SplashScreen, useLocalSearchParams, useNavigation} from "expo-router";
 import PartyCard from "../Components/PartyCard";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
@@ -19,8 +19,10 @@ import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import * as Haptics from "expo-haptics";
 import {getPartyPictures, getUsers, preloadImages} from "../Providers/UserProvider";
 import PartyDetails from "../Components/PartyDetails";
+import {useFonts} from "expo-font";
 
 
+SplashScreen.preventAutoHideAsync();
 
 const HomeScreen = (route) => {
     const [parties, setParties] = useState<PartyDisplayDTO[]>([]);
@@ -29,6 +31,20 @@ const HomeScreen = (route) => {
     LogBox.ignoreAllLogs();
 
     const params = useLocalSearchParams<{ party: string }>();
+
+    const [loaded, error] = useFonts({
+        'IgBold': require('../../assets/fonts/Instagram Sans Bold.ttf'),
+        'IgLigth': require('../../assets/fonts/Instagram Sans Light.ttf'),
+        'IgMedium': require('../../assets/fonts/Instagram Sans Medium.ttf'),
+        'IgHeadline': require('../../assets/fonts/Instagram Sans Headline.otf'),
+
+    });
+
+    useEffect(() => {
+        if (loaded || error) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
 
 
     useEffect(() => {
@@ -77,11 +93,10 @@ const HomeScreen = (route) => {
 
     useEffect(() => {
 
-
-
         const fetchData = async () => {
 
             let [newUser1, newUser2, newUser3, newUser4, newUser5]  = await getUsers();
+
             let [image1, image2, image3, image4, image5] = await getPartyPictures();
 
             // User likes
@@ -178,7 +193,7 @@ const HomeScreen = (route) => {
             setParties([party]);
         };
 
-        fetchData();
+        fetchData().then(r => console.log("Data fetched"));
     }, []);
 
     return (
@@ -289,7 +304,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 64,
         color: '#333333',
-        fontFamily: 'Inter-Black',
+        fontFamily: 'IgBold',
         marginTop: "10%",
     },
     dividerContainer: {
@@ -313,6 +328,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
         fontSize: 10,
         fontWeight: "bold",
+        fontFamily: 'IgMeduim',
         color: "#333",
     },
     addPartyButton: {

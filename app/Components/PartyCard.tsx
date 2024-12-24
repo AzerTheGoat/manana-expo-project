@@ -20,7 +20,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import LikeModal from "@/app/Components/LikeModal";
 import * as Haptics from 'expo-haptics';
 import CommentModal from "@/app/Components/CommentModal";
-import {useNavigation} from "expo-router";
+import {SplashScreen, useNavigation} from "expo-router";
 import StarsModal from "@/app/Components/StarsModal";
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import ParticipantsModal from "@/app/Components/ParticipantsModal";
@@ -31,6 +31,7 @@ import {participantsPost} from "@/app/Entities/ParticipantsPost";
 import {userComment, userLikes, userStars} from "@/app/Entities/ParticipantsIteraction";
 import uri from "ajv/lib/runtime/uri";
 import DuringParty from "@/app/Components/DuringParty";
+import {useFonts} from "expo-font";
 
 interface PartyCardProps {
     setModalComponent: Dispatch<SetStateAction<JSX.Element | null>>;
@@ -38,7 +39,24 @@ interface PartyCardProps {
     setDisplayingAddPartyButton: Dispatch<SetStateAction<boolean>>;
 }
 
+SplashScreen.preventAutoHideAsync();
+
 const PartyCard: React.FC<PartyCardProps> = ({ setModalComponent, partyDisplayDTO, setDisplayingAddPartyButton }) => {
+
+    const [loaded, error] = useFonts({
+        'IgBold': require('../../assets/fonts/Instagram Sans Bold.ttf'),
+        'IgLigth': require('../../assets/fonts/Instagram Sans Light.ttf'),
+        'IgMedium': require('../../assets/fonts/Instagram Sans Medium.ttf'),
+        'IgHeadline': require('../../assets/fonts/Instagram Sans Headline.otf'),
+
+    });
+
+    useEffect(() => {
+        if (loaded || error) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
+
 
     const navigation = useNavigation();
 
@@ -135,7 +153,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ setModalComponent, partyDisplayDT
                         style={styles.userImage}
                         source={{uri : partyDisplayDTO.owner?.image}}
                     />
-                    <Text style={{ fontSize: 12, fontWeight: "bold", marginLeft: 8 }}>{partyDisplayDTO.owner.name}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: "bold", marginLeft: 8 , fontFamily: 'IgMeduim',}}>{partyDisplayDTO.owner.name}</Text>
                 </View>
                 <TouchableOpacity onPress={handleParticipantsPress} activeOpacity={1}>
                     <View style={styles.participantContainer}>
@@ -179,7 +197,7 @@ const PartyCard: React.FC<PartyCardProps> = ({ setModalComponent, partyDisplayDT
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={handleLikePress} activeOpacity={1}> {/* Add this */}
-                        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 7, marginRight: 7 }}>{partyDisplayDTO.likes.length}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 7, marginRight: 7 , fontFamily: 'IgMeduim'}}>{partyDisplayDTO.likes.length}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleCommentPress} style={{flexDirection:'row'}} activeOpacity={1}> {/* Add this */}
                         <FontAwesomeIcon size={22} icon={faComment} />
@@ -193,6 +211,11 @@ const PartyCard: React.FC<PartyCardProps> = ({ setModalComponent, partyDisplayDT
                     </TouchableOpacity>
                 </View>
                 <Text style={{ fontSize: 16, marginTop: 10 }}>{partyDisplayDTO.title}</Text>
+
+            </View>
+
+            <View style={{backgroundColor: '#ddd', height:3}}>
+
             </View>
 
             <Modal
@@ -272,13 +295,14 @@ const styles = StyleSheet.create({
     },
 
     remainingText: {
+        fontFamily: 'IgMeduim',
         fontSize: 12,
         fontWeight: "bold",
         color: "#555",
     },
 
     cardImage: {
-        height: 250,
+        height: 370,
         width: "100%",
     },
 

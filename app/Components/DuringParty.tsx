@@ -27,9 +27,9 @@ import { PartyDisplayDTO } from "@/app/Entities/PartyDisplayDTO";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart as solidHeart, faStar as solidStar } from "@fortawesome/free-solid-svg-icons";
 import { faComment, faHeart } from "@fortawesome/free-regular-svg-icons";
-import { faTextHeight, faImage } from "@fortawesome/free-solid-svg-icons";
+import { faTextHeight, faImage, faCamera, faFileImage} from "@fortawesome/free-solid-svg-icons";
 import * as Haptics from "expo-haptics";
-
+import * as ImagePicker from 'expo-image-picker';
 import LikeModal from "@/app/Components/LikeModal";
 import CommentModal from "@/app/Components/CommentModal";
 import StarsModal from "@/app/Components/StarsModal";
@@ -43,6 +43,7 @@ import ImagePost from "@/app/Components/ImagePost";
 import Camera from "@/app/Components/Camera";
 import {getUsers} from "@/app/Providers/UserProvider";
 import {imagePost, textPost} from "@/app/Entities/ParticipantsPost";
+import AddTextToImageInPost from "@/app/Components/AddTextToImageInPost";
 
 /** PROPS */
 type DuringPartyProps = {
@@ -60,6 +61,9 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
     const [localPartyDisplayDTO, setLocalPartyDisplayDTO] = useState<PartyDisplayDTO>(
         partyDisplayDTO
     );
+
+    const [addingCaptionToImageModal, setAddingCaptionToImageModal] = useState(false);
+    const [imageToAddCaption, setImageToAddCaption] = useState("");
 
     // Manage the bottom sheet for "Send Text Post"
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -149,6 +153,7 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
         setModalComponent(null);
         // Potentially restore tab bar:
         navigation.setOptions({ tabBarStyle: { display: "flex" } });
+        setDisplayAddContentButtons(false);
     };
 
     //-------------------------------------------------------------------------------------------
@@ -169,6 +174,8 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
     const handleAddImage = async (imageUri: string, caption: string) => {
         const [user1, user2, user3, user4, user5] = await getUsers();
 
+        console.log("Adding image post with URI: ", imageUri);
+
         // Create a new "image post" object (structure up to you)
         const newImagePost : imagePost = {
             owner: user1,
@@ -184,6 +191,37 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
             ...prev,
             imagePosts: [newImagePost, ...prev.imagePosts],
         }));
+    };
+
+
+    const handlePickImage = async () => {
+
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        // Request permission
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera roll is required!");
+            return;
+        }
+
+        setDisplayAddContentButtons(false);
+
+        // Launch the image picker
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const selectedImageUri = result.assets[0].uri;
+
+            setImageToAddCaption(selectedImageUri);
+            setAddingCaptionToImageModal(true);
+        }
     };
 
     //-------------------------------------------------------------------------------------------
@@ -268,27 +306,32 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
     const handleLikePress = () => {
         setModalComponent(<LikeModal likes={localPartyDisplayDTO.likes} />);
         closeTextBottomSheet();
+        setDisplayAddContentButtons(false);
     };
 
     const handleCommentPress = () => {
         setModalComponent(<CommentModal comments={localPartyDisplayDTO.comments} />);
         closeTextBottomSheet();
+        setDisplayAddContentButtons(false);
     };
 
     const handleStarPress = () => {
         setModalComponent(<StarsModal stars={localPartyDisplayDTO.stars} />);
         closeTextBottomSheet();
+        setDisplayAddContentButtons(false);
     };
 
     const handleParticipantsPress = () => {
         setModalComponent(<ParticipantsModal participants={localPartyDisplayDTO.participants} />);
         closeTextBottomSheet();
+        setDisplayAddContentButtons(false);
     };
 
     const handleBingoPress = () => {
         setModalComponent(<BingoModal bingos={localPartyDisplayDTO.bingos} />);
         closeTextBottomSheet();
         navigation.setOptions({ tabBarStyle: { display: "none" } });
+        setDisplayAddContentButtons(false);
     };
 
     //-------------------------------------------------------------------------------------------
@@ -297,7 +340,7 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             {/* If user has NOT opened the camera, display the main UI */}
-            {!openCameraModal && (
+            {!addingCaptionToImageModal && !openCameraModal && (
                 <View style={{ flex: 1 }}>
                     <ScrollView style={{ marginTop: "10%" }}>
                         <Text style={styles.title}>{localPartyDisplayDTO.title}</Text>
@@ -392,6 +435,20 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
                     {/* Animated "Add Content" Buttons */}
                     {displayAddContentButtons && (
                         <View>
+                            <TouchableOpacity onPress={handlePickImage} activeOpacity={1}>
+                                <Animated.View
+                                    style={[
+                                        styles.textPostIcon,
+                                        {
+                                            marginLeft:60,
+                                            opacity: textPostIconOpacity,
+                                            transform: [{ translateX: textPostIconTranslateX }],
+                                        },
+                                    ]}
+                                >
+                                    <FontAwesomeIcon size={25} icon={faFileImage} color={"black"} />
+                                </Animated.View>
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={handleTextPost} activeOpacity={1}>
                                 <Animated.View
                                     style={[
@@ -416,7 +473,7 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
                                         },
                                     ]}
                                 >
-                                    <FontAwesomeIcon size={25} icon={faImage} color={"black"} />
+                                    <FontAwesomeIcon size={25} icon={faCamera} color={"black"} />
                                 </Animated.View>
                             </TouchableOpacity>
                         </View>
@@ -486,7 +543,12 @@ const DuringParty = ({ partyDisplayDTO, setModalVisible }: DuringPartyProps) => 
             )}
 
             {/* If user chooses to open the camera */}
-            {openCameraModal && <Camera setOpenCameraModal={setOpenCameraModal} onImageSubmit={handleAddImage} />}
+            {!addingCaptionToImageModal && openCameraModal && <Camera setOpenCameraModal={setOpenCameraModal} onImageSubmit={handleAddImage} />}
+
+            {addingCaptionToImageModal && (
+                <AddTextToImageInPost uri={imageToAddCaption} handleAddImage={handleAddImage} setAddingCaptionToImageModal={setAddingCaptionToImageModal} />
+            )
+            }
         </GestureHandlerRootView>
     );
 };
@@ -579,6 +641,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 10.32,
+        elevation: 10,
     },
 
     backButton: {
@@ -596,6 +659,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 10.32,
+        elevation: 10,
     },
 
     textPostIcon: {
@@ -613,6 +677,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.5,
         shadowRadius: 10.32,
+        elevation: 20,
     },
 
     imagePostIcon: {
@@ -630,6 +695,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.5,
         shadowRadius: 10.32,
+        elevation: 20,
     },
 
     capturedPhotoContainer: {
